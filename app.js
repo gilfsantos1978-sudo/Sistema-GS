@@ -1,218 +1,263 @@
-// Configuração do Supabase - SUBSTITUA COM SUAS CREDENCIAIS
-const SUPABASE_URL = https://jelzheugzimwucqnytok.supabase.co
-const SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplbHpoZXVnemltd3VjcW55dG9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTYxOTcsImV4cCI6MjA3MzUzMjE5N30.lviaZq07p_F_NaT5hloCua7sRT1sKChQD3Qy9ymvP1o
+// CONFIGURACAO SUPABASE
+const SUPABASE_URL = 'https://jelzheugzimwucqnytok.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplbHpoZXVnemltd3VjcW55dG9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTYxOTcsImV4cCI6MjA3MzUzMjE5N30.lviaZq07p_F_NaT5hloCua7sRT1sKChQD3Qy9ymvP1o';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabase = null;
 
-// Quando a página carregar
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Sistema GS Iniciado');
-    carregarDados();
-    configurarNavegacao();
-    iniciarHeartbeat();
-});
-
-// Carregar dados do Supabase
-async function carregarDados() {
+function initSupabase() {
     try {
-        // Carregar robôs
-        const { data: robots, error: robotsError } = await supabase
-            .from('robots')
-            .select('*');
+        if (typeof window.supabase === 'undefined') {
+            throw new Error('Biblioteca Supabase nao carregada');
+        }
 
-        if (robotsError) throw robotsError;
+        if (SUPABASE_URL.includes('SEU-PROJETO') || SUPABASE_ANON_KEY.includes('SUA-CHAVE')) {
+            console.warn('Credenciais do Supabase nao configuradas');
+            showError('Configure as credenciais do Supabase no arquivo app.js');
+            return false;
+        }
 
-        // Carregar plataformas
-        const { data: platforms, error: platformsError } = await supabase
-            .from('affiliate_platforms')
-            .select('*');
-
-        if (platformsError) throw platformsError;
-
-        // Carregar logs
-        const { data: logs, error: logsError } = await supabase
-            .from('registros')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(50);
-
-        if (logsError) throw logsError;
-
-        // Mostrar dados
-        mostrarRobots(robots || []);
-        mostrarPlataformas(platforms || []);
-        mostrarLogs(logs || []);
-
-        console.log('Dados carregados com sucesso!');
-
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('Supabase inicializado');
+        return true;
     } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-        mostrarErro('Erro ao carregar dados. Verifique o console.');
+        console.error('Erro ao inicializar Supabase:', error);
+        showError('Erro na inicializacao: ' + error.message);
+        return false;
     }
 }
 
-// Mostrar robôs
-function mostrarRobots(robots) {
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Sistema GS Iniciado');
+    
+    if (initSupabase()) {
+        carregarDados();
+        setInterval(carregarDados, 60000);
+        setTimeout(enviarHeartbeat, 5000);
+        setInterval(enviarHeartbeat, 120000);
+    }
+});
+
+async function carregarDados() {
+    if (!supabase) {
+        console.error('Supabase nao inicializado');
+        return;
+    }
+
+    try {
+        console.log('Carregando dados...');
+
+        const { data: robots, error: robotsError } = await supabase
+            .from('robots')
+            .select('*')
+            .order('created_at', { ascending: false });
+        
+        if (robotsError) {
+            console.error('Erro ao carregar robos:', robotsError);
+            throw new Error('Erro na tabela robots: ' + robotsError.message);
+        }
+
+        const { data: platforms, error: platformsError } = await supabase
+            .from('affiliate_platforms')
+            .select('*')
+            .order('nome', { ascending: true });
+        
+        if (platformsError) {
+            console.error('Erro ao carregar plataformas:', platformsError);
+            throw new Error('Erro na tabela affiliate_platforms: ' + platformsError.message);
+        }
+
+        console.log('Carregados: ' + (robots?.length || 0) + ' robos, ' + (platforms?.length || 0) + ' plataformas');
+
+        atualizarEstatisticas(robots || [], platforms || []);
+        renderizarRobos(robots || []);
+        renderizarPlataformas(platforms || []);
+
+        console.log('Dados carregados com sucesso');
+
+    } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        showError(error.message);
+    }
+}
+
+function atualizarEstatisticas(robots, platforms) {
+    const activeRobots = robots.filter(r => r.status === 'active').length;
+    updateElement('active-robots', activeRobots);
+    updateElement('total-platforms', platforms.length);
+    
+    const totalRequests = robots.reduce((sum, robot) => {
+        const metrics = robot.metrics || {};
+        return sum + (metrics.verificacoes_hora || 0);
+    }, 0);
+    updateElement('requests-hour', totalRequests);
+}
+
+function renderizarRobos(robots) {
     const container = document.getElementById('robots-container');
-    if (!container) return;
+    if (!container) {
+        console.warn('Elemento robots-container nao encontrado');
+        return;
+    }
+
+    if (robots.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Nenhum robo cadastrado</p></div>';
+        return;
+    }
 
     container.innerHTML = '';
 
     robots.forEach(robot => {
-        const metrics = robot.metrics || {};
-        const card = document.createElement('div');
-        card.className = 'cyber-card robot-card';
-        card.innerHTML = `
-            <div class="robot-status status-active">${robot.status.toUpperCase()}</div>
-            <h3>${robot.name}</h3>
-            <p>Último heartbeat: ${formatarData(robot.last_heartbeat)}</p>
-            <div class="metrics">
-                <div class="metric">
-                    <span>CPU: ${metrics.cpu_uso || 0}%</span>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${metrics.cpu_uso || 0}%"></div>
-                    </div>
-                </div>
-                <div class="metric">
-                    <span>Memória: ${metrics.memoria_uso || 0}%</span>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${metrics.memoria_uso || 0}%"></div>
-                    </div>
-                </div>
-                <div class="metric-grid">
-                    <div class="metric-item">
-                        <small>Deploys Hoje:</small>
-                        <strong>${metrics.deploy_hoje || 0}</strong>
-                    </div>
-                    <div class="metric-item">
-                        <small>Integridade:</small>
-                        <strong>${metrics.integridade || 0}%</strong>
-                    </div>
-                </div>
-            </div>
-        `;
+        const card = criarCardRobo(robot);
         container.appendChild(card);
     });
 }
 
-// Mostrar plataformas
-function mostrarPlataformas(platforms) {
-    const container = document.getElementById('platforms-container');
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    platforms.forEach(platform => {
-        const metrics = platform.metrics || {};
-        const card = document.createElement('div');
-        card.className = 'cyber-card platform-card';
-        card.innerHTML = `
-            <h3>${platform.nome}</h3>
-            <div class="platform-type">${platform.tipo}</div>
-            <div class="metric-grid">
-                <div class="metric-item">
-                    <small>Taxa Sucesso:</small>
-                    <strong>${metrics.taxa_sucesso || 'N/A'}</strong>
-                </div>
-                <div class="metric-item">
-                    <small>Requisições/h:</small>
-                    <strong>${metrics.requisicoes_hora || 0}</strong>
-                </div>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
-// Mostrar logs
-function mostrarLogs(logs) {
-    const container = document.getElementById('logs-container');
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    logs.forEach(log => {
-        const logEntry = document.createElement('div');
-        logEntry.className = `log-entry log-${log.tipo || 'info'}`;
-        logEntry.innerHTML = `
-            <strong>[${formatarData(log.created_at)}]</strong> ${log.acao}
-        `;
-        container.appendChild(logEntry);
-    });
-}
-
-// Configurar navegação
-function configurarNavegacao() {
-    const links = document.querySelectorAll('.nav-link');
-    links.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const sectionId = this.getAttribute('data-section');
-            mostrarSecao(sectionId);
-        });
-    });
-}
-
-// Mostrar seção
-function mostrarSecao(sectionId) {
-    // Esconder todas as seções
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.add('hidden');
-    });
-    // Mostrar a seção clicada
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.classList.remove('hidden');
+function criarCardRobo(robot) {
+    const metrics = robot.metrics || {};
+    const card = document.createElement('div');
+    card.className = 'cyber-card robot-card';
+    
+    const isActive = robot.status === 'active';
+    const statusClass = isActive ? 'status-active' : 'status-inactive';
+    const statusText = robot.status?.toUpperCase() || 'DESCONHECIDO';
+    
+    let heartbeatText = 'Nunca';
+    if (robot.last_heartbeat) {
+        try {
+            const date = new Date(robot.last_heartbeat);
+            heartbeatText = date.toLocaleString('pt-BR');
+        } catch (e) {
+            heartbeatText = 'Data invalida';
+        }
     }
+    
+    const cpuUso = Math.min(Math.max(metrics.cpu_uso || 0, 0), 100);
+    const memoriaUso = Math.min(Math.max(metrics.memoria_uso || 0, 0), 100);
+    
+    card.innerHTML = '<div class="robot-status ' + statusClass + '">' + statusText + '</div>' +
+        '<h3>' + (robot.name || 'Robo sem nome') + '</h3>' +
+        '<p class="robot-heartbeat">Ultimo: ' + heartbeatText + '</p>' +
+        '<div class="metrics">' +
+        '<div class="metric">' +
+        '<span>CPU: ' + cpuUso.toFixed(1) + '%</span>' +
+        '<div class="progress-bar">' +
+        '<div class="progress-fill" style="width: ' + cpuUso + '%"></div>' +
+        '</div>' +
+        '</div>' +
+        '<div class="metric">' +
+        '<span>Memoria: ' + memoriaUso.toFixed(1) + '%</span>' +
+        '<div class="progress-bar">' +
+        '<div class="progress-fill" style="width: ' + memoriaUso + '%"></div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+    
+    return card;
 }
 
-// Formatar data
-function formatarData(dataString) {
-    return new Date(dataString).toLocaleString('pt-BR');
+function renderizarPlataformas(platforms) {
+    const container = document.getElementById('platforms-mini-container');
+    if (!container) {
+        console.warn('Elemento platforms-mini-container nao encontrado');
+        return;
+    }
+
+    if (platforms.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Nenhuma plataforma cadastrada</p></div>';
+        return;
+    }
+
+    const grid = document.createElement('div');
+    grid.className = 'platform-mini-grid';
+
+    platforms.slice(0, 4).forEach(platform => {
+        const card = criarCardPlataforma(platform);
+        grid.appendChild(card);
+    });
+
+    container.innerHTML = '';
+    container.appendChild(grid);
 }
 
-// Heartbeat automático
-function iniciarHeartbeat() {
-    setInterval(atualizarHeartbeat, 30000);
+function criarCardPlataforma(platform) {
+    const metrics = platform.metrics || {};
+    const card = document.createElement('div');
+    card.className = 'platform-card';
+    
+    card.innerHTML = '<div class="platform-icon">' + getPlatformIcon(platform.nome) + '</div>' +
+        '<div class="platform-name">' + (platform.nome || 'Sem nome') + '</div>' +
+        '<div class="platform-metric">' + (metrics.taxa_sucesso || 'N/A') + '</div>';
+    
+    return card;
 }
 
-async function atualizarHeartbeat() {
-    const robotId = '356a5a4a-ed38-4d9c-8f5d-e2852c91e482';
-    const metrics = {
-        cpu_uso: Math.floor(Math.random() * 20) + 25,
-        memoria_uso: Math.floor(Math.random() * 15) + 25,
-        uptime: "99.9%",
-        deploy_hoje: Math.floor(Math.random() * 3) + 8,
-        integridade: 98,
-        dominios_ativos: 12,
-        verificacoes_hora: Math.floor(Math.random() * 50) + 100,
-        tempo_deploy_medio: "45s",
-        dns_status: "operacional",
-        ssl_status: "valido"
+function getPlatformIcon(nome) {
+    const icons = {
+        'Shopee': '🛍️',
+        'Mercado Livre': '📦',
+        'Monetizze': '💰',
+        'Hotmart': '🎯',
+        'Amazon': '📦',
+        'Eduzz': '💎',
+        'Braip': '🚀',
+        'Kiwify': '🥝',
+        'PerfectPay': '💳'
     };
+    return icons[nome] || '🔗';
+}
+
+async function enviarHeartbeat() {
+    if (!supabase) {
+        console.warn('Supabase nao inicializado - heartbeat cancelado');
+        return;
+    }
 
     try {
-        const { error } = await supabase
+        const { data: activeRobots, error: selectError } = await supabase
+            .from('robots')
+            .select('id')
+            .eq('status', 'active');
+
+        if (selectError) throw selectError;
+
+        if (!activeRobots || activeRobots.length === 0) {
+            console.log('Nenhum robo ativo para atualizar');
+            return;
+        }
+
+        const now = new Date().toISOString();
+        const { error: updateError } = await supabase
             .from('robots')
             .update({
-                last_heartbeat: new Date().toISOString(),
-                metrics: metrics,
-                updated_at: new Date().toISOString()
+                last_heartbeat: now,
+                updated_at: now
             })
-            .eq('id', robotId);
+            .eq('status', 'active');
 
-        if (error) throw error;
+        if (updateError) throw updateError;
 
-        console.log('Heartbeat atualizado:', new Date().toLocaleTimeString());
+        console.log('Heartbeat enviado para ' + activeRobots.length + ' robo(s)');
     } catch (error) {
-        console.error('Erro no heartbeat:', error);
+        console.error('Erro no heartbeat:', error.message);
     }
 }
 
-// Função para mostrar erro
-function mostrarErro(mensagem) {
+function updateElement(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.textContent = value;
+    } else {
+        console.warn('Elemento ' + id + ' nao encontrado');
+    }
+}
+
+function showError(message) {
     const container = document.getElementById('robots-container');
     if (container) {
-        container.innerHTML = `<div class="error-message">${mensagem}</div>`;
+        container.innerHTML = '<div class="error-message">' +
+            '<h3>Erro</h3>' +
+            '<p>' + message + '</p>' +
+            '<small>Verifique o console para mais detalhes</small>' +
+            '</div>';
     }
 }

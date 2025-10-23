@@ -10,7 +10,7 @@ function initSupabase() {
             throw new Error('Biblioteca Supabase nao carregada');
         }
 
-        if (SUPABASE_URL.includes('SEU-PROJETO') || SUPABASE_ANON_KEY.includes('SUA-CHAVE')) {
+        if (SUPABASE_URL.includes('https://jelzheugzimwucqnytok.supabase.co') || SUPABASE_ANON_KEY.includes('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImplbHpoZXVnemltd3VjcW55dG9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTc5NTYxOTcsImV4cCI6MjA3MzUzMjE5N30.lviaZq07p_F_NaT5hloCua7sRT1sKChQD3Qy9ymvP1o')) {
             console.warn('Credenciais do Supabase nao configuradas');
             showError('Configure as credenciais do Supabase no arquivo app.js');
             return false;

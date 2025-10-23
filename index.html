@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema GS - Painel Total</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="cyberpunk-container">
+        <!-- Sidebar -->
+        <nav class="cyber-sidebar">
+            <div class="logo">GS TOTAL</div>
+            <ul class="nav-links">
+                <li><a href="#dashboard" class="nav-link active" data-section="dashboard">🏠 Painel</a></li>
+                <li><a href="#robots" class="nav-link" data-section="robots">🤖 Robôs</a></li>
+                <li><a href="#platforms" class="nav-link" data-section="platforms">🔄 Plataformas</a></li>
+                <li><a href="#logs" class="nav-link" data-section="logs">📊 Logs</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="cyber-header">
+                <h1 class="neon-text">SISTEMA GS - PAINEL TOTAL</h1>
+                <div class="status-indicators">
+                    <span class="status-online">🟢 ONLINE</span>
+                    <span id="uptime-counter" class="neon-text">UPTIME: 99.9%</span>
+                    <span id="last-update"></span>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="stats-grid">
+                    <div class="cyber-card">
+                        <h3>ROBÔS ATIVOS</h3>
+                        <div id="active-robots" class="neon-number">0</div>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>REQUISIÇÕES/HORA</h3>
+                        <div id="requests-hour" class="neon-number">0</div>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>PLATAFORMAS</h3>
+                        <div id="total-platforms" class="neon-number">0</div>
+                    </div>
+                    <div class="cyber-card">
+                        <h3>UPTIME SISTEMA</h3>
+                        <div id="system-uptime" class="neon-number">99.9%</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="cyber-card">
+                        <h3>🤖 ROBÔS DO SISTEMA</h3>
+                        <div class="robots-grid" id="robots-container">
+                            <!-- Robots serão carregados via JavaScript -->
+                        </div>
+                    </div>
+
+                    <div class="cyber-card">
+                        <h3>🔄 PLATAFORMAS ATIVAS</h3>
+                        <div class="platforms-mini-grid" id="platforms-mini-container">
+                            <!-- Plataformas em miniatura -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Robots Section -->
+            <section id="robots" class="section hidden">
+                <div class="section-header">
+                    <h2>🤖 GERENCIAMENTO DE ROBÔS</h2>
+                    <button class="cyber-button" onclick="addNewRobot()">+ Novo Robô</button>
+                </div>
+                <div class="robots-grid-full" id="robots-full-container">
+                    <!-- Todos os robôs -->
+                </div>
+            </section>
+
+            <!-- Platforms Section -->
+            <section id="platforms" class="section hidden">
+                <div class="section-header">
+                    <h2>🔄 PLATAFORMAS INTEGRADAS</h2>
+                    <div class="platform-filters">
+                        <select id="platform-type-filter">
+                            <option value="all">Todas</option>
+                            <option value="marketplace">Marketplaces</option>
+                            <option value="afiliado">Afiliados</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="platforms-grid" id="platforms-container">
+                    <!-- Plataformas serão carregadas via JavaScript -->
+                </div>
+            </section>
+
+            <!-- Logs Section -->
+            <section id="logs" class="section hidden">
+                <div class="section-header">
+                    <h2>📊 LOGS EM TEMPO REAL</h2>
+                    <div class="logs-controls">
+                        <input type="text" id="log-search" placeholder="🔍 Filtrar logs...">
+                        <select id="log-type-filter">
+                            <option value="all">Todos</option>
+                            <option value="error">Erros</option>
+                            <option value="success">Sucesso</option>
+                            <option value="warning">Alertas</option>
+                            <option value="info">Informações</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="cyber-card">
+                    <div class="logs-container" id="logs-container">
+                        <!-- Logs serão carregados via JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

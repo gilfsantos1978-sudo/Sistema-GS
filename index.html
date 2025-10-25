@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS AI PAINEL - Sistema de Automação</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🚀 GS AI PAINEL</h1>
+            <p>Sistema de Automação Inteligente - Controle por Comandos</p>
+            <div class="vercel-badge">⚡ HOSPEDADO NO VERCEL</div>
+            
+            <div class="command-bar">
+                <input type="text" id="command-input" placeholder="Digite um comando: /add-robo, /analise, /scan, /help">
+                <button onclick="executarComando()">▶️ Executar</button>
+            </div>
+        </div>
+
+        <!-- Status em Tempo Real -->
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="icon">🤖</div>
+                    <h2>Robôs Ativos</h2>
+                </div>
+                <div class="metrics">
+                    <div class="metric-value" id="total-robos">6</div>
+                    <div class="metric-label" id="robos-list">Marketing(2), Vendas(2), Analytics(2)</div>
+                </div>
+                <div class="status-badge status-active">✅ AUTOMATIZADO</div>
+            </div>
+
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="icon">📊</div>
+                    <h2>Análises</h2>
+                </div>
+                <div class="metrics">
+                    <div class="metric-value" id="total-analises">24</div>
+                    <div class="metric-label">Tendências identificadas</div>
+                </div>
+                <div class="status-badge status-active">🔍 ATIVO</div>
+            </div>
+
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="icon">🛒</div>
+                    <h2>Funis de Venda</h2>
+                </div>
+                <div class="metrics">
+                    <div class="metric-value" id="total-funis">8</div>
+                    <div class="metric-label">Funis automatizados</div>
+                </div>
+                <div class="status-badge status-active">💰 GERANDO</div>
+            </div>
+        </div>
+
+        <!-- Plataformas Integradas -->
+        <div class="platforms-panel">
+            <h3>🔗 Plataformas Integradas</h3>
+            <div class="platforms-grid">
+                <div class="platform-card">
+                    <div class="platform-icon">💼</div>
+                    <span>Upwork</span>
+                    <div class="platform-status online">✅</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🎯</div>
+                    <span>Fiverr</span>
+                    <div class="platform-status online">✅</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">⚡</div>
+                    <span>Freelancer.com</span>
+                    <div class="platform-status online">✅</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">🌎</div>
+                    <span>Workana</span>
+                    <div class="platform-status online">✅</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Painel de Controle Rápido -->
+        <div class="control-panel">
+            <h3>🎮 Comandos Rápidos</h3>
+            <div class="quick-commands">
+                <button class="cmd-btn" onclick="executarComandoRapido('/add-robo marketing')">🤖 Add Marketing</button>
+                <button class="cmd-btn" onclick="executarComandoRapido('/add-robo analise')">🤖 Add Análise</button>
+                <button class="cmd-btn" onclick="executarComandoRapido('/analise-tendencias')">📈 Análise</button>
+                <button class="cmd-btn" onclick="executarComandoRapido('/criar-funil')">🛒 Criar Funil</button>
+                <button class="cmd-btn" onclick="executarComandoRapido('/scan-mercado')">🔍 Scan</button>
+                <button class="cmd-btn" onclick="executarComandoRapido('/otimizar-campanhas')">🎯 Otimizar</button>
+                <button class="cmd-btn" onclick="executarComandoRapido('/status')">📊 Status</button>
+                <button class="cmd-btn" onclick="executarComandoRapido('/help')">❓ Ajuda</button>
+            </div>
+        </div>
+
+        <!-- Logs do Sistema -->
+        <div class="logs-panel">
+            <div class="logs-header">
+                <h3>📋 Logs de Automação</h3>
+                <div class="log-actions">
+                    <button onclick="painel.limparLogs()">🗑️ Limpar</button>
+                    <button onclick="painel.exportLogs()">📤 Exportar</button>
+                </div>
+            </div>
+            <div class="logs-container" id="logs-container">
+                <div class="log-entry log-success">
+                    <strong>[BOOT]</strong> Sistema GS AI inicializado no Vercel - 13:00:00
+                </div>
+                <div class="log-entry">
+                    <strong>[INFO]</strong> Todos os módulos carregados - 13:00:01
+                </div>
+                <div class="log-entry log-success">
+                    <strong>[PLATFORM]</strong> Plataformas conectadas - 13:00:02
+                </div>
+            </div>
+        </div>
+
+        <div class="domain-info">
+            <h3>🌐 Sistema Disponível em:</h3>
+            <div class="domain-link">https://sistema-gs.vercel.app</div>
+            <p style="color: #27ae60; margin-top: 10px;">
+                ✅ Sistema 100% funcional - Hospedagem Vercel
+            </p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

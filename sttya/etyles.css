@@ -1,0 +1,276 @@
+html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>	
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS Painel - Sistema de Monitoramento</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🚀 GS PAINEL PRO</h1>
+            <p>Sistema de Monitoramento em Tempo Real - Deploy Vercel</p>
+            <div class="vercel-badge">⚡ HOSPEDADO NO VERCEL</div>
+        </div>
+        
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="icon">🤖</div>
+                    <h2>Robôs do Sistema</h2>
+                </div>
+                <div class="metrics">
+                    <div class="metric-group">
+                        <div>
+                            <div class="metric-value" id="robos-ativos">8</div>
+                            <div class="metric-label">Ativos de <span id="robos-total">10</span> total</div>
+                        </div>
+                    </div>
+                    <div class="metric-group">
+                        <div>
+                            <div class="metric-value" id="requisicoes-hora">1.2K</div>
+                            <div class="metric-label">Requisições/Hora</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-badge status-active" id="status-robos">✅ OPERACIONAL</div>
+            </div>
+            
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="icon">🖥️</div>
+                    <h2>Plataformas</h2>
+                </div>
+                <div class="metrics">
+                    <div class="metric-group">
+                        <div>
+                            <div class="metric-value" id="plataformas-ativas">5</div>
+                            <div class="metric-label">Ativas de <span id="plataformas-total">5</span> total</div>
+                        </div>
+                    </div>
+                    <div class="metric-group">
+                        <div>
+                            <div class="metric-value" id="uptime">99.98%</div>
+                            <div class="metric-label">Uptime do Sistema</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-badge status-active" id="status-plataformas">✅ ESTÁVEL</div>
+            </div>
+            
+            <div class="status-card">
+                <div class="card-header">
+                    <div class="icon">⚙️</div>
+                    <h2>Status do Sistema</h2>
+                </div>
+                <div class="metrics">
+                    <div class="metric-group">
+                        <div>
+                            <div class="metric-value" id="tempo-atividade">45d 12h</div>
+                            <div class="metric-label">Tempo de Atividade</div>
+                        </div>
+                    </div>
+                    <div class="metric-group">
+                        <div>
+                            <div class="metric-value" id="latencia">42ms</div>
+                            <div class="metric-label">Latência Média</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-badge status-active" id="status-sistema">✅ TODOS SISTEMAS OK</div>
+            </div>
+        </div>
+        
+        <div class="logs-panel">
+            <div class="logs-header">
+                <div class="card-header">
+                    <div class="icon">📋</div>
+                    <h2>Logs do Sistema</h2>
+                </div>
+                <div class="metric-label" id="log-count">8 logs</div>
+            </div>
+            <div class="logs-container" id="logs-container">
+                <!-- Logs serão carregados via JavaScript -->
+            </div>
+            <div class="controls">
+                <button class="btn" onclick="painel.atualizarDados()">🔄 Atualizar Dados</button>
+                <button class="btn btn-success" onclick="painel.simularSucesso()">✅ Simular Sucesso</button>
+                <button class="btn btn-warning" onclick="painel.simularAlerta()">⚠️ Simular Alerta</button>
+                <button class="btn btn-info" onclick="painel.reiniciarSistema()">🔄 Reiniciar Sistema</button>
+                <button class="btn btn-danger" onclick="painel.simularFalha()">💥 Simular Falha</button>
+                <button class="btn" onclick="painel.limparLogs()">🗑️ Limpar Logs</button>
+            </div>
+        </div>
+        
+        <div class="domain-info">
+            <h3>🌐 Sistema Disponível em:</h3>
+            <p>
+                <a href="https://sistemags.com" class="domain-link" target="_blank">https://sistemags.com</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+Salvar como: index.html
+________________________________________
+
+0
+.card-header h2 {
+    font-size: 1.5em;
+    margin-left: 15px;
+}
+
+.icon {
+    font-size: 2.2em;
+    background: rgba(255,255,255,0.2);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.metrics {
+    display: grid;
+    gap: 20px;
+}
+
+.metric-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.metric-value {
+    font-size: 2.5em;
+    font-weight: bold;
+}
+
+.metric-label {
+    color: #bdc3c7;
+    font-size: 0.9em;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.status-active { background: var(--success); }
+.status-warning { background: var(--warning); }
+.status-danger { background: var(--danger); }
+
+.logs-panel {
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.logs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.logs-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.log-entry {
+    padding: 15px;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    border-left: 4px solid var(--info);
+    animation: slideIn 0.3s ease;
+}
+
+.log-error { border-left-color: var(--danger); }
+.log-warning { border-left-color: var(--warning); }
+.log-success { border-left-color: var(--success); }
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    min-width: 160px;
+    justify-content: center;
+}
+
+.btn:hover {
+    background: #34495e;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-success { background: var(--success); }
+.btn-warning { background: var(--warning); }
+.btn-danger { background: var(--danger); }
+.btn-info { background: var(--info); }
+
+.domain-info {
+    text-align: center;
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 15px;
+}
+
+.domain-link {
+    color: #feca57;
+    font-size: 1.2em;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.domain-link:hover {
+    text-decoration: underline;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+S

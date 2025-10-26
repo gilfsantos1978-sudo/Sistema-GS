@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GS AI - Painel Administrativo</title>
+    <link rel="stylesheet" href="styles-admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>🚀 GS AI ADMIN</h1>
+                <span id="userWelcome">Bem-vindo, Admin</span>
+            </div>
+            <div class="header-right">
+                <button onclick="AuthSystem.logout()" class="logout-btn">🚪 Sair</button>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">🤖</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="adminTotalRobos">7</div>
+                        <div class="stat-label">Robôs Ativos</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <div class="stat-value">R$ 7.425</div>
+                        <div class="stat-label">Receita Mensal</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Análises Hoje</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <div class="stat-value">3</div>
+                        <div class="stat-label">Usuários Ativos</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-actions">
+                <h2>⚙️ Ações Administrativas</h2>
+                <div class="action-buttons">
+                    <button class="admin-btn" onclick="manageUsers()">👥 Gerenciar Usuários</button>
+                    <button class="admin-btn" onclick="viewLogs()">📋 Ver Logs do Sistema</button>
+                    <button class="admin-btn" onclick="backupSystem()">🔄 Backup do Sistema</button>
+                    <button class="admin-btn" onclick="systemSettings()">⚙️ Configurações</button>
+                </div>
+            </div>
+
+            <div class="quick-links">
+                <h2>🔗 Acesso Rápido</h2>
+                <div class="links-grid">
+                    <a href="index.html" class="link-card">📊 Dashboard Principal</a>
+                    <a href="dashboard-compacto.html" class="link-card">📱 Dashboard Compacto</a>
+                    <a href="#" class="link-card">📈 Relatórios</a>
+                    <a href="#" class="link-card">🔧 Ferramentas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="app-admin.js"></script>
+</body>
+</html>
